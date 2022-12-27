@@ -26,8 +26,8 @@ painlessMesh  mesh;
 
 // User stub
 unsigned int HUMIDITY_TEMPERATURE_SAMPLING_PERIOD = 60;
-void sendMeasurements() ; // Prototype so PlatformIO doesn't complain
-Task taskSendMeasurements( TASK_SECOND * HUMIDITY_TEMPERATURE_SAMPLING_PERIOD , TASK_FOREVER, &sendMeasurements );
+// void sendMeasurements() ; // Prototype so PlatformIO doesn't complain
+// Task taskSendMeasurements( TASK_SECOND * HUMIDITY_TEMPERATURE_SAMPLING_PERIOD , TASK_FOREVER, &sendMeasurements );
 
 // User stub
 float CHECK_PIR_SAMPLING_PERIOD = 0.5;
@@ -46,9 +46,9 @@ void checkPIR(){
   unsigned int voltValuePIR_DOOR_act = analogRead(DOOR_PIR_PIN);
   unsigned int voltValuePIR_NEIGHBORHOOD_act = analogRead(NEIGHBORHOOD_PIR_PIN);
   
-  Serial.printf("%d\n",voltValuePIR_SWIMMINGPOOL_act);
+  Serial.printf("SWIM: %d\tGATE: %d\t DOOR: %d\tNEIGH: %d\n",voltValuePIR_SWIMMINGPOOL_act,voltValuePIR_GATE_act,voltValuePIR_DOOR_act,voltValuePIR_NEIGHBORHOOD_act);
 
-  if(voltValuePIR_SWIMMINGPOOL_act >= DETECTION_THRESHOLD){
+  if(voltValuePIR_SWIMMINGPOOL_act <= DETECTION_THRESHOLD){
     if(PIR_SWIMMINGPOOL_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -60,7 +60,7 @@ void checkPIR(){
     PIR_SWIMMINGPOOL_DETECTED = false;
   }
 
-  if(voltValuePIR_NEIGHBORHOOD_act >= DETECTION_THRESHOLD){
+  if(voltValuePIR_NEIGHBORHOOD_act <= DETECTION_THRESHOLD){
     if(PIR_NEIGHBORHOOD_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -72,7 +72,7 @@ void checkPIR(){
     PIR_NEIGHBORHOOD_DETECTED = false;
   }
 
-  if(voltValuePIR_DOOR_act >= DETECTION_THRESHOLD){
+  if(voltValuePIR_DOOR_act <= DETECTION_THRESHOLD){
     if(PIR_DOOR_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -84,7 +84,7 @@ void checkPIR(){
     PIR_DOOR_DETECTED = false;
   }
 
-  if(voltValuePIR_GATE_act >= DETECTION_THRESHOLD){
+  if(voltValuePIR_GATE_act <= DETECTION_THRESHOLD){
     if(PIR_GATE_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -129,40 +129,40 @@ bool periodical_neighborhood_light = false;*/
 }*/
 void sendMex(unsigned int type,String response, String value, uint32_t dest);
 
-void sendMeasurements() {
+// void sendMeasurements() {
   
-  String mex;
+//   String mex;
 
-  StaticJsonDocument<200> doc;
+//   StaticJsonDocument<200> doc;
 
-  doc["response"] = "humidity_temperature";
+//   doc["response"] = "humidity_temperature";
 
-  JsonObject value = doc.createNestedObject("value");
+//   JsonObject value = doc.createNestedObject("value");
 
-  //Read from DHT22
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
-  //int temperature = rand()%50;
-  //int humidity = rand()%50;
-  Serial.print(F("Humidity: "));
-  Serial.print(h);
-  Serial.print(F("%  Temperature: "));
-  Serial.print(t);
+//   //Read from DHT22
+//   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+//   float h = dht.readHumidity();
+//   // Read temperature as Celsius (the default)
+//   float t = dht.readTemperature();
+//   //int temperature = rand()%50;
+//   //int humidity = rand()%50;
+//   Serial.print(F("Humidity: "));
+//   Serial.print(h);
+//   Serial.print(F("%  Temperature: "));
+//   Serial.print(t);
 
-  value["temperature"] = t;
-  value["humidity"] = h;
+//   value["temperature"] = t;
+//   value["humidity"] = h;
 
-  serializeJson(doc, mex);
+//   serializeJson(doc, mex);
 
-  mesh.sendSingle(uint32_t(MQTTBRIDGE),mex);
+//   mesh.sendSingle(uint32_t(MQTTBRIDGE),mex);
 
-  //String msg = "Hello from node ";
-  //msg += mesh.getNodeId();
+//   //String msg = "Hello from node ";
+//   //msg += mesh.getNodeId();
   
-  //taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
-}
+//   //taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
+// }
 
 void sendMex(unsigned int type,String type_payload, String value, uint32_t dest){
 
@@ -302,7 +302,7 @@ void receivedCallback( const uint32_t &from, const String &msg )
         //Set the new interval
         unsigned int new_sampling_period = (unsigned int)value.toInt();
         HUMIDITY_TEMPERATURE_SAMPLING_PERIOD = new_sampling_period;
-        taskSendMeasurements.setInterval(HUMIDITY_TEMPERATURE_SAMPLING_PERIOD);
+        // taskSendMeasurements.setInterval(HUMIDITY_TEMPERATURE_SAMPLING_PERIOD);
 
         sendMex(RESPONSE,"humidity_temperature_sampling_period",value,MQTTBRIDGE);
 
@@ -495,15 +495,16 @@ void setup() {
   retrieve_EEPROM_values();
   Serial.printf("target: %u\n",MQTTBRIDGE);
 
-  userScheduler.addTask( taskSendMeasurements );
+  // userScheduler.addTask( taskSendMeasurements );
   userScheduler.addTask( taskCheckPIR );
 /*  userScheduler.addTask( taskSwitchOffGateLights ); //For PIR
   userScheduler.addTask( taskSwitchOffNeighborhoodLights ); //For PIR
 */
-  taskSendMeasurements.enable();
+  // taskSendMeasurements.enable();
   taskCheckPIR.enable();
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  // pinMode(LED_BUILTIN, OUTPUT);
+  // digitalWrite(LED_BUILTIN, LOW);
   
   // PIR Motion Sensor mode INPUT_PULLUP so that when open circuit -> V = VCC
   pinMode(GATE_PIR_PIN, INPUT);
@@ -530,7 +531,7 @@ void setup() {
   Serial.printf("ID %u\n",mesh.getNodeId());
 
   //Initialize the DHT sensor
-  dht.begin();
+  // dht.begin();
 
 }
 
