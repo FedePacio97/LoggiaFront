@@ -48,7 +48,7 @@ void checkPIR(){
   
   Serial.printf("SWIM: %d\tGATE: %d\t DOOR: %d\tNEIGH: %d\n",voltValuePIR_SWIMMINGPOOL_act,voltValuePIR_GATE_act,voltValuePIR_DOOR_act,voltValuePIR_NEIGHBORHOOD_act);
 
-  if(voltValuePIR_SWIMMINGPOOL_act <= DETECTION_THRESHOLD){
+  if(voltValuePIR_SWIMMINGPOOL_act >= DETECTION_THRESHOLD){
     if(PIR_SWIMMINGPOOL_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -60,7 +60,7 @@ void checkPIR(){
     PIR_SWIMMINGPOOL_DETECTED = false;
   }
 
-  if(voltValuePIR_NEIGHBORHOOD_act <= DETECTION_THRESHOLD){
+  if(voltValuePIR_NEIGHBORHOOD_act >= DETECTION_THRESHOLD){
     if(PIR_NEIGHBORHOOD_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -72,7 +72,7 @@ void checkPIR(){
     PIR_NEIGHBORHOOD_DETECTED = false;
   }
 
-  if(voltValuePIR_DOOR_act <= DETECTION_THRESHOLD){
+  if(voltValuePIR_DOOR_act >= DETECTION_THRESHOLD){
     if(PIR_DOOR_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
@@ -84,7 +84,7 @@ void checkPIR(){
     PIR_DOOR_DETECTED = false;
   }
 
-  if(voltValuePIR_GATE_act <= DETECTION_THRESHOLD){
+  if(voltValuePIR_GATE_act >= DETECTION_THRESHOLD){
     if(PIR_GATE_DETECTED == false){
       GetMutex(&mutex_PIR_queue);
       for(unsigned int i= 0; i< MESSAGE_PER_PIR_DETECTED; i++)
