@@ -3,7 +3,7 @@
 #define REQUEST 0 //For type of mex in sendMex
 #define RESPONSE 1
 const unsigned int GATE_PIR_PIN = D1;
-const unsigned int NEIGHBORHOOD_PIR_PIN = D2;
+const unsigned int NEIGHBORHOOD_PIR_PIN = D2; 
 const unsigned int SWIMMINGPOOL_PIR_PIN = D6;
 const unsigned int DOOR_PIR_PIN = D5;
 
@@ -17,7 +17,7 @@ uint8_t MAX_CONNECTION_PER_NODE = 10;
 #define SWIMMINGPOOL_PIR 2
 #define NEIGHBORHOOD_PIR 3
 
-const unsigned int DETECTION_THRESHOLD = 0;
+const unsigned int DETECTION_THRESHOLD = 1023;
 const unsigned int MESSAGE_PER_PIR_DETECTED = 3;
 
 /**************************************/
